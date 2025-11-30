@@ -126,6 +126,8 @@ class RealtimeAlertsList extends StatelessWidget {
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.grey900,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

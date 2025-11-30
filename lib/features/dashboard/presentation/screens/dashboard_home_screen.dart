@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../widgets/stats_card.dart';
@@ -48,9 +47,6 @@ class _DashboardHomeScreenState extends ConsumerState<DashboardHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final dateFormat = DateFormat('dd MMM yyyy'); // Suppression de la locale fr_FR
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -88,39 +84,46 @@ class _DashboardHomeScreenState extends ConsumerState<DashboardHomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // TODO: Refresh data
           await Future.delayed(const Duration(seconds: 1));
         },
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header with date
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.bar_chart_rounded,
                     color: AppColors.primary,
-                    size: 28,
+                    size: 24,
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'STATISTIQUES DU JOUR',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4,
+                      children: [
+                        Text(
+                          'STATISTIQUES',
+                          style: AppTextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        dateFormat.format(now),
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.grey600,
+                        Text(
+                          '• AUJOURD\'HUI',
+                          style: AppTextStyles.titleMedium.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -138,7 +141,7 @@ class _DashboardHomeScreenState extends ConsumerState<DashboardHomeScreen> {
                     crossAxisCount: crossAxisCount,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: isWide ? 1.2 : 1.3,
+                    childAspectRatio: 1.1,
                     children: [
                       StatsCard(
                         icon: Icons.sms_outlined,
@@ -176,52 +179,118 @@ class _DashboardHomeScreenState extends ConsumerState<DashboardHomeScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Realtime Alerts
               RealtimeAlertsList(alerts: _mockAlerts),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Weekly Chart
               WeeklyChart(
                 weeklyData: _mockWeeklyData,
                 labels: _mockWeeklyLabels,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Action Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Refresh action
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Rafraîchir'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Export action
-                      },
-                      icon: const Icon(Icons.download_outlined),
-                      label: const Text('Exporter'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Settings action
-                      },
-                      icon: const Icon(Icons.settings_outlined),
-                      label: const Text('Paramètres'),
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 600;
+
+                  return isWide
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Rafraîchir'),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.download_outlined),
+                                label: const Text('Exporter'),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.settings_outlined),
+                                label: const Text('Paramètres'),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.refresh),
+                                    label: const Text('Rafraîchir'),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.download_outlined),
+                                    label: const Text('Exporter'),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.settings_outlined),
+                                label: const Text('Paramètres'),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                },
               ),
             ],
           ),

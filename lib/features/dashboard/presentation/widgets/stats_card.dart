@@ -27,6 +27,7 @@ class StatsCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Icon and Title
@@ -50,7 +51,7 @@ class StatsCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             // Value
             Text(
@@ -60,10 +61,11 @@ class StatsCard extends StatelessWidget {
                 color: AppColors.grey900,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             // Trend
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   isPositive ? Icons.trending_up : Icons.trending_down,
