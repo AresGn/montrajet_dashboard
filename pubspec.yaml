@@ -22,8 +22,8 @@ dependencies:
   riverpod_generator: ^2.3.17
 
   # Backend & Database
-  supabase_flutter: ^2.0.0
-  supabase: ^2.0.0
+  supabase_flutter: ^1.10.0
+  supabase: ^1.10.0
 
   # HTTP & Networking
   dio: ^5.4.0
@@ -53,6 +53,9 @@ dependencies:
   # Image Loading
   cached_network_image: ^3.4.0
   image_picker: ^1.1.0
+  
+  # Package Info
+  package_info_plus: ^5.0.0
 
   # CSV Export
   csv: ^6.0.0

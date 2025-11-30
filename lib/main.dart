@@ -1,6 +1,10 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// ignore: duplicate_ignore
+// ignore: unused_import
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/config/env.dart';
 import 'core/config/supabase_config.dart';
