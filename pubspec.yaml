@@ -76,6 +76,10 @@ dependencies:
   # openai: ^0.0.0  # For Claude/OpenAI
   # grok_dart: ^0.1.0  # For Grok (if available)
 
+  # Maps
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/realtime_alerts_list.dart';
 import '../widgets/weekly_chart.dart';
+import '../../../trajets/presentation/screens/trajets_list_screen.dart';
 
 class DashboardHomeScreen extends ConsumerStatefulWidget {
   const DashboardHomeScreen({Key? key}) : super(key: key);
@@ -349,7 +350,12 @@ class _DashboardHomeScreenState extends ConsumerState<DashboardHomeScreen> {
             title: const Text('Trajets'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to trajets screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TrajetsListScreen(),
+                ),
+              );
             },
           ),
           ListTile(
