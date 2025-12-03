@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../features/dashboard/presentation/screens/dashboard_home_screen.dart';
 import '../../features/trajets/presentation/screens/trajets_list_screen.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../features/sms/presentation/screens/sms_screen.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class AppNavigationDrawer extends StatelessWidget {
   const AppNavigationDrawer({super.key});
@@ -14,7 +15,7 @@ class AppNavigationDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
             child: Column(
@@ -81,9 +82,18 @@ class AppNavigationDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.sms_outlined),
             title: const Text('Messages SMS'),
+            selected: ModalRoute.of(context)?.settings.name == '/sms',
+            selectedTileColor: AppColors.primary.withOpacity(0.1),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to SMS screen
+              if (ModalRoute.of(context)?.settings.name != '/sms') {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SmsScreen(),
+                  ),
+                );
+              }
             },
           ),
           ListTile(

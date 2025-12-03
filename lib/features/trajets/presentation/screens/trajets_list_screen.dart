@@ -4,69 +4,10 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/navigation_drawer.dart';
+import '../../domain/entities/trajet.dart';
+import '../../domain/entities/passager.dart';
 import '../widgets/trajet_card.dart';
-
-enum TrajetStatut {
-  enAttente,
-  confirme,
-  risque,
-}
-
-class Trajet {
-  final String id;
-  final String plaque;
-  final String depart;
-  final String arrivee;
-  final String heure;
-  final String conducteurNom;
-  final String conducteurTel;
-  final int passagersActuels;
-  final int capaciteTotale;
-  final double pourcentageRemplissage;
-  final String montantRecette;
-  final TrajetStatut statut;
-  final LatLng positionDepart;
-  final LatLng positionArrivee;
-
-  Trajet({
-    required this.id,
-    required this.plaque,
-    required this.depart,
-    required this.arrivee,
-    required this.heure,
-    required this.conducteurNom,
-    required this.conducteurTel,
-    required this.passagersActuels,
-    required this.capaciteTotale,
-    required this.pourcentageRemplissage,
-    required this.montantRecette,
-    required this.statut,
-    required this.positionDepart,
-    required this.positionArrivee,
-  });
-
-  String get statutTexte {
-    switch (statut) {
-      case TrajetStatut.enAttente:
-        return 'EN_ATTENTE';
-      case TrajetStatut.confirme:
-        return 'CONFIRMÉ';
-      case TrajetStatut.risque:
-        return 'RISQUE';
-    }
-  }
-
-  Color get statutColor {
-    switch (statut) {
-      case TrajetStatut.enAttente:
-        return AppColors.warning;
-      case TrajetStatut.confirme:
-        return AppColors.success;
-      case TrajetStatut.risque:
-        return AppColors.danger;
-    }
-  }
-}
+import 'trajet_detail_screen.dart';
 
 class TrajetsListScreen extends StatefulWidget {
   const TrajetsListScreen({super.key});
@@ -77,232 +18,243 @@ class TrajetsListScreen extends StatefulWidget {
 
 class _TrajetsListScreenState extends State<TrajetsListScreen> {
   int _currentPage = 1;
-  int _totalPages = 4;
+  final int _totalPages = 4;
   String _filtreActuel = 'Tous';
-  String _filtreDate = 'Aujourd\'hui';
   final TextEditingController _searchController = TextEditingController();
   bool _showMap = false;
 
-  final List<Trajet> _mockTrajets = [
-    Trajet(
-      id: '1',
-      plaque: 'AA-1234-BJ',
-      depart: 'Akpakpa',
-      arrivee: 'Calavi',
-      heure: '22:00',
-      conducteurNom: 'Jean Koffi',
-      conducteurTel: '+229 97 12 34 56',
-      passagersActuels: 12,
-      capaciteTotale: 20,
-      pourcentageRemplissage: 0.6,
-      montantRecette: '2,400F',
-      statut: TrajetStatut.enAttente,
-      positionDepart: LatLng(6.3654, 2.4183),
-      positionArrivee: LatLng(6.4167, 2.2833),
-    ),
-    Trajet(
-      id: '2',
-      plaque: 'AB-5678-BJ',
-      depart: 'Cotonou',
-      arrivee: 'Godomey',
-      heure: '06:30',
-      conducteurNom: 'Marie Houessou',
-      conducteurTel: '+229 96 78 90 12',
-      passagersActuels: 18,
-      capaciteTotale: 18,
-      pourcentageRemplissage: 1.0,
-      montantRecette: '3,600F',
-      statut: TrajetStatut.confirme,
-      positionDepart: LatLng(6.3654, 2.4183),
-      positionArrivee: LatLng(6.4031, 2.3439),
-    ),
-    Trajet(
-      id: '3',
-      plaque: 'AC-9101-BJ',
-      depart: 'Agla',
-      arrivee: 'IITA',
-      heure: '21:30',
-      conducteurNom: 'Thomas Dossou',
-      conducteurTel: '+229 95 44 55 66',
-      passagersActuels: 5,
-      capaciteTotale: 16,
-      pourcentageRemplissage: 0.31,
-      montantRecette: '1,000F',
-      statut: TrajetStatut.risque,
-      positionDepart: LatLng(6.3738, 2.3871),
-      positionArrivee: LatLng(6.4103, 2.3089),
-    ),
-  ];
+  // Donnees mock pour la demonstration
+  late final List<Trajet> _mockTrajets;
+
+  @override
+  void initState() {
+    super.initState();
+    _mockTrajets = _createMockTrajets();
+  }
+
+  List<Trajet> _createMockTrajets() {
+    return [
+      Trajet(
+        id: '1',
+        plaque: 'AA-1234-BJ',
+        depart: 'Akpakpa',
+        arrivee: 'Calavi',
+        pointDepart: 'Carrefour Dantokpa',
+        pointArrivee: 'Carrefour Universite',
+        heure: '22:00',
+        date: DateTime.now(),
+        conducteurNom: 'Jean Koffi',
+        conducteurTel: '+229 97 12 34 56',
+        passagersActuels: 12,
+        capaciteTotale: 20,
+        seuilMinimum: 10,
+        recetteTotale: 2400,
+        statut: TrajetStatut.enAttente,
+        positionDepart: const LatLng(6.3654, 2.4183),
+        positionArrivee: const LatLng(6.4167, 2.2833),
+        prixZones: {'Z1': 150, 'Z2': 200, 'Z3': 250},
+        passagers: [
+          const Passager(id: '1', prenom: 'Paul', telephone: '97001122', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '2', prenom: 'Marie', telephone: '96112233', depart: 'Akpakpa', arrivee: 'PK14', montant: 150),
+          const Passager(id: '3', prenom: 'Jean', telephone: '95223344', depart: 'Dantokpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '4', prenom: 'Sophie', telephone: '97334455', depart: 'Godomey', arrivee: 'Calavi', montant: 100),
+          const Passager(id: '5', prenom: 'David', telephone: '96445566', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '6', prenom: 'Emma', telephone: '97556677', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '7', prenom: 'Lucas', telephone: '96667788', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '8', prenom: 'Lea', telephone: '97778899', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '9', prenom: 'Hugo', telephone: '96889900', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '10', prenom: 'Chloe', telephone: '97990011', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '11', prenom: 'Nathan', telephone: '96001122', depart: 'Akpakpa', arrivee: 'Calavi', montant: 200),
+          const Passager(id: '12', prenom: 'Ines', telephone: '97112233', depart: 'Akpakpa', arrivee: 'Calavi', montant: 150),
+        ],
+      ),
+      Trajet(
+        id: '2',
+        plaque: 'AB-5678-BJ',
+        depart: 'Cotonou',
+        arrivee: 'Godomey',
+        heure: '06:30',
+        date: DateTime.now(),
+        conducteurNom: 'Marie Houessou',
+        conducteurTel: '+229 96 78 90 12',
+        passagersActuels: 18,
+        capaciteTotale: 18,
+        seuilMinimum: 10,
+        recetteTotale: 3600,
+        statut: TrajetStatut.confirme,
+        positionDepart: const LatLng(6.3654, 2.4183),
+        positionArrivee: const LatLng(6.4031, 2.3439),
+        passagers: [],
+      ),
+      Trajet(
+        id: '3',
+        plaque: 'AC-9101-BJ',
+        depart: 'Agla',
+        arrivee: 'IITA',
+        heure: '21:30',
+        date: DateTime.now(),
+        conducteurNom: 'Thomas Dossou',
+        conducteurTel: '+229 95 44 55 66',
+        passagersActuels: 5,
+        capaciteTotale: 16,
+        seuilMinimum: 10,
+        recetteTotale: 1000,
+        statut: TrajetStatut.risque,
+        positionDepart: const LatLng(6.3738, 2.3871),
+        positionArrivee: const LatLng(6.4103, 2.3089),
+        passagers: [],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.directions_bus_outlined),
-            const SizedBox(width: 8),
-            const Text('Trajets MonTrajet'),
+            Icon(Icons.directions_bus_outlined),
+            SizedBox(width: 8),
+            Text('Trajets MonTrajet'),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              _showNouveauTrajetDialog(context);
-            },
+            onPressed: () => _showNouveauTrajetDialog(context),
             tooltip: 'Nouveau trajet',
           ),
         ],
       ),
       body: Column(
         children: [
-          // Filtres et recherche
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Bar de recherche
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Rechercher un trajet...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {});
-                            },
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {});
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                // Filtres
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildFilterChip('Tous'),
-                      const SizedBox(width: 8),
-                      _buildFilterChip('Aujourd\'hui'),
-                      const SizedBox(width: 8),
-                      _buildFilterChip('Demain'),
-                      const SizedBox(width: 8),
-                      _buildFilterChip('Cette semaine'),
-                      const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _showMap = !_showMap;
-                          });
-                        },
-                        icon: Icon(_showMap ? Icons.list : Icons.map),
-                        label: Text(_showMap ? 'Voir liste' : 'Voir carte'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Contenu principal (Carte ou Liste)
+          _buildFiltersSection(),
           Expanded(
             child: _showMap ? _buildMapView() : _buildListView(),
           ),
-
-          // Pagination
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: _currentPage > 1
-                      ? () {
-                          setState(() {
-                            _currentPage--;
-                          });
-                        }
-                      : null,
-                  icon: const Icon(Icons.chevron_left),
-                  tooltip: 'Précédent',
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  'Page $_currentPage/$_totalPages',
-                  style: AppTextStyles.bodyMedium,
-                ),
-                const SizedBox(width: 16),
-                IconButton(
-                  onPressed: _currentPage < _totalPages
-                      ? () {
-                          setState(() {
-                            _currentPage++;
-                          });
-                        }
-                      : null,
-                  icon: const Icon(Icons.chevron_right),
-                  tooltip: 'Suivant',
-                ),
-              ],
-            ),
-          ),
+          _buildPagination(),
         ],
       ),
       drawer: const AppNavigationDrawer(),
     );
   }
 
+  Widget _buildFiltersSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Rechercher un trajet...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip('Tous'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Aujourd\'hui'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Demain'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Cette semaine'),
+                const SizedBox(width: 16),
+                ElevatedButton.icon(
+                  onPressed: () => setState(() => _showMap = !_showMap),
+                  icon: Icon(_showMap ? Icons.list : Icons.map),
+                  label: Text(_showMap ? 'Voir liste' : 'Voir carte'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFilterChip(String label) {
     final isSelected = _filtreActuel == label;
-
     return FilterChip(
       label: Text(label),
       selected: isSelected,
-      onSelected: (selected) {
-        setState(() {
-          _filtreActuel = label;
-        });
-      },
+      onSelected: (_) => setState(() => _filtreActuel = label),
       backgroundColor: AppColors.grey100,
       selectedColor: AppColors.primary.withOpacity(0.2),
       checkmarkColor: AppColors.primary,
     );
   }
 
+  Widget _buildPagination() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: _currentPage > 1
+                ? () => setState(() => _currentPage--)
+                : null,
+            icon: const Icon(Icons.chevron_left),
+            tooltip: 'Precedent',
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Page $_currentPage/$_totalPages',
+            style: AppTextStyles.bodyMedium,
+          ),
+          const SizedBox(width: 16),
+          IconButton(
+            onPressed: _currentPage < _totalPages
+                ? () => setState(() => _currentPage++)
+                : null,
+            icon: const Icon(Icons.chevron_right),
+            tooltip: 'Suivant',
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMapView() {
     return FlutterMap(
-      options: MapOptions(
-        initialCenter: const LatLng(6.3654, 2.4183),
+      options: const MapOptions(
+        initialCenter: LatLng(6.3654, 2.4183),
         initialZoom: 10.0,
       ),
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'app.tokpa.montrajet',
+          tileProvider: NetworkTileProvider(),
+          evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
         ),
-        // Marqueurs des trajets
         MarkerLayer(
           markers: _mockTrajets.map((trajet) {
+            if (trajet.positionDepart == null) return null;
             return Marker(
-              point: trajet.positionDepart,
+              point: trajet.positionDepart!,
               width: 40,
               height: 40,
               alignment: Alignment.center,
@@ -310,7 +262,7 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
                 onTap: () => _showTrajetInfo(context, trajet),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: trajet.statutColor,
+                    color: trajet.statut.color,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                     boxShadow: [
@@ -329,13 +281,13 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
                 ),
               ),
             );
-          }).toList(),
+          }).whereType<Marker>().toList(),
         ),
-        // Marqueurs d'arrivée
         MarkerLayer(
           markers: _mockTrajets.map((trajet) {
+            if (trajet.positionArrivee == null) return null;
             return Marker(
-              point: trajet.positionArrivee,
+              point: trajet.positionArrivee!,
               width: 40,
               height: 40,
               alignment: Alignment.center,
@@ -362,14 +314,13 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
                 ),
               ),
             );
-          }).toList(),
+          }).whereType<Marker>().toList(),
         ),
-        // Lignes des trajets
         PolylineLayer(
-          polylines: _mockTrajets.map((trajet) {
+          polylines: _mockTrajets.where((t) => t.positionDepart != null && t.positionArrivee != null).map((trajet) {
             return Polyline(
-              points: [trajet.positionDepart, trajet.positionArrivee],
-              color: trajet.statutColor,
+              points: [trajet.positionDepart!, trajet.positionArrivee!],
+              color: trajet.statut.color,
               strokeWidth: 3.0,
             );
           }).toList(),
@@ -396,9 +347,9 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
             passagersActuels: trajet.passagersActuels,
             capaciteTotale: trajet.capaciteTotale,
             pourcentageRemplissage: trajet.pourcentageRemplissage,
-            montantRecette: trajet.montantRecette,
-            statut: trajet.statutTexte,
-            statutColor: trajet.statutColor,
+            montantRecette: trajet.recetteFormatee,
+            statut: trajet.statut.label,
+            statutColor: trajet.statut.color,
             onVoirDetails: () => _voirDetails(context, trajet),
             onModifier: () => _modifierTrajet(context, trajet),
             onSMSListe: () => _envoyerSMSListe(context, trajet),
@@ -426,7 +377,7 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${trajet.depart} → ${trajet.arrivee}',
+              '${trajet.depart} -> ${trajet.arrivee}',
               style: AppTextStyles.bodyLarge,
             ),
             const SizedBox(height: 4),
@@ -434,23 +385,32 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
               'Heure: ${trajet.heure}',
               style: AppTextStyles.bodyMedium,
             ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: trajet.statutColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                trajet.statutTexte,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: trajet.statutColor,
-                  fontWeight: FontWeight.w600,
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: trajet.statut.color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    trajet.statut.label,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: trajet.statut.color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _voirDetails(context, trajet);
+                  },
+                  child: const Text('Voir details'),
+                ),
+              ],
             ),
           ],
         ),
@@ -463,7 +423,7 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Nouveau trajet'),
-        content: const Text('Fonctionnalité à implémenter'),
+        content: const Text('Fonctionnalite a implementer'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -475,26 +435,23 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
   }
 
   void _voirDetails(BuildContext context, Trajet trajet) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Voir détails de ${trajet.plaque}'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TrajetDetailScreen(trajet: trajet),
       ),
     );
   }
 
   void _modifierTrajet(BuildContext context, Trajet trajet) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Modifier ${trajet.plaque}'),
-      ),
+      SnackBar(content: Text('Modifier ${trajet.plaque}')),
     );
   }
 
   void _envoyerSMSListe(BuildContext context, Trajet trajet) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Envoyer SMS liste pour ${trajet.plaque}'),
-      ),
+      SnackBar(content: Text('Envoyer SMS liste pour ${trajet.plaque}')),
     );
   }
 
@@ -503,7 +460,7 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Annuler le trajet'),
-        content: Text('Êtes-vous sûr de vouloir annuler le trajet ${trajet.plaque} ?'),
+        content: Text('Etes-vous sur de vouloir annuler le trajet ${trajet.plaque} ?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -513,9 +470,7 @@ class _TrajetsListScreenState extends State<TrajetsListScreen> {
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Trajet ${trajet.plaque} annulé'),
-                ),
+                SnackBar(content: Text('Trajet ${trajet.plaque} annule')),
               );
             },
             child: Text(
