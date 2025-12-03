@@ -20,15 +20,15 @@ extension SmsTypeExtension on SmsType {
   String get label {
     switch (this) {
       case SmsType.demandeTokpa:
-        return 'DEMANDE_TOKPA';
+        return 'Tokpa';
       case SmsType.disponibiliteConducteur:
-        return 'DISPONIBILITE_CONDUCTEUR';
+        return 'Disponibilité';
       case SmsType.confirmation:
-        return 'CONFIRMATION';
+        return 'Confirmé';
       case SmsType.annulation:
-        return 'ANNULATION';
+        return 'Annulé';
       case SmsType.inconnu:
-        return 'INCONNU';
+        return 'Inconnu';
     }
   }
 
